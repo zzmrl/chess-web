@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
 :root {
-	background: var(--color-stone-700);
+  --color-light: var(--color-gray-200);
+  --color-dark: var(--color-gray-400);
+  --color-bg: var(--color-gray-300);
+  --color-selected: var(--color-gray-700);
+
+  background: var(--color-stone-700);
 }
