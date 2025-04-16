@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 :root {
-  --color-light: var(--color-gray-200);
-  --color-dark: var(--color-gray-400);
+  --tile-color-white: var(--color-gray-200);
+  --tile-color-black: var(--color-gray-400);
   --color-bg: var(--color-gray-300);
   --color-selected: var(--color-gray-700);
 

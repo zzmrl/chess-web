@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      chess.js:
+        specifier: ^1.2.0
+        version: 1.2.0
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.8
@@ -803,6 +807,9 @@ packages:
   check-error@2.1.1:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
     engines: {node: '>= 16'}
+
+  chess.js@1.2.0:
+    resolution: {integrity: sha512-QWdfpAkMslQ48hDDoEzEko6GbYTAKKx4UdXAPEF8nFnAuqp+woyL8LHSbziRP8u1aMAbnlOF0YkXF4ui0Nsubg==}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -2486,6 +2493,8 @@ snapshots:
       supports-color: 7.2.0
 
   check-error@2.1.1: {}
+
+  chess.js@1.2.0: {}
 
   chokidar@4.0.3:
     dependencies:

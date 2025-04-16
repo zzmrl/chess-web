@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Chess, type Square, SQUARES } from 'chess.js';
+
   interface Props {
     /**
      * Color of light tiles
@@ -26,65 +28,54 @@
     '--color-selected'?: string;
   }
 
-  type Board = string[][];
-  type Point = [number, number];
-  type Moves = [string[], string[]];
+  const chess: Chess = $state(new Chess());
 
-  const OG_BOARD: Board = [
-    '♜♞♝♛♚♝♞♜',
-    '♟♟♟♟♟♟♟♟',
-    '        ',
-    '        ',
-    '        ',
-    '        ',
-    '♙♙♙♙♙♙♙♙',
-    '♖♘♗♕♔♗♘♖',
-  ].map((line) => line.split(''));
-  const LIGHT_PIECES = new Set('♙♖♘♗♕♔');
-  const DARK_PIECES = new Set('♟♜♞♝♛♚');
+  let board = $state(chess.board());
+  let selection = $state<Square | ''>('');
 
-  let board = $state(OG_BOARD);
-  let moves = $state([[], []]);
-  let selection: Point | [] = $state([]);
-  let currentPlayer: 'dark' | 'light' = $state('light');
-
-  const validateMove = (from: Point, to: Point): boolean => {
-    return false;
-  };
-
-  const movePiece = (from: Point, to: Point) => {
-    board[to[0]][to[1]] = board[from[0]][from[1]];
-    board[from[0]][from[1]] = ' ';
+  const movePiece = (from: Square, to: Square): boolean => {
+    try {
+      chess.move({ from, to });
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   };
 
   export const reset = () => {
-    board = OG_BOARD;
+    chess.reset();
+    board = chess.board();
+    selection = '';
   };
 </script>
 
 <div class="board">
+  <!-- {#each SQUARES as square} -->
   {#each board as row, i}
-    {#each row as col, j}
+    {#each row as sq, j}
+      {@const square = SQUARES[i * 8 + j]}
       <div
         role="button"
         tabindex="0"
-        class:selected={selection[0] === i && selection[1] === j}
+        class:selected={square === selection}
         class:dark={(i + j) % 2 === 0}
+        class={sq && `${sq.color}${sq.type}`}
         onclick={() => {
-          if (!selection.length) {
-            selection = [i, j];
+          if (!selection) {
+            selection = square;
           } else {
-            // validate move
-            movePiece(selection, [i, j]);
-            selection = [];
+            const success = movePiece(selection, square);
+            if (success) {
+              board = chess.board();
+            }
+            selection = '';
           }
         }}
         onkeypress={() => {
           // TODO
         }}
-      >
-        {col}
-      </div>
+      ></div>
     {/each}
   {/each}
 </div>
@@ -97,13 +88,15 @@
     grid-template-rows: repeat(8, minmax(0, 1fr));
     border: 1px solid;
     background: var(--color-bg, gray);
-    gap: 0.2rem;
+    gap: 0.1rem;
     font-size: 3rem;
     font-family: var(--font-mono);
     user-select: none;
 
     * {
-      background: var(--tile-color-white, lightgray);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: var(--tile-color-white, lightgray);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -114,7 +107,55 @@
     }
 
     .dark {
-      background: var(--tile-color-black, darkgray);
+      background-color: var(--tile-color-black, darkgray);
+    }
+
+    .wp {
+      background-image: url('$lib/sprites/Chess_plt45.svg');
+    }
+
+    .wn {
+      background-image: url('$lib/sprites/Chess_nlt45.svg');
+    }
+
+    .wb {
+      background-image: url('$lib/sprites/Chess_blt45.svg');
+    }
+
+    .wr {
+      background-image: url('$lib/sprites/Chess_rlt45.svg');
+    }
+
+    .wq {
+      background-image: url('$lib/sprites/Chess_qlt45.svg');
+    }
+
+    .wk {
+      background-image: url('$lib/sprites/Chess_klt45.svg');
+    }
+
+    .bp {
+      background-image: url('$lib/sprites/Chess_pdt45.svg');
+    }
+
+    .bn {
+      background-image: url('$lib/sprites/Chess_ndt45.svg');
+    }
+
+    .bb {
+      background-image: url('$lib/sprites/Chess_bdt45.svg');
+    }
+
+    .br {
+      background-image: url('$lib/sprites/Chess_rdt45.svg');
+    }
+
+    .bq {
+      background-image: url('$lib/sprites/Chess_qdt45.svg');
+    }
+
+    .bk {
+      background-image: url('$lib/sprites/Chess_kdt45.svg');
     }
   }
 </style>
