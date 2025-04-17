@@ -27,7 +27,7 @@
      */
     '--color-selected'?: string;
     /**
-     * Current turn player's color
+     * Current turn's player color
      */
     turn?: Color;
   }
@@ -77,7 +77,12 @@
         class={piece && `${piece.color}${piece.type}`}
         onclick={() => {
           if (!selection) {
+            if (piece?.color !== turn) {
+              return;
+            }
             selection = square;
+          } else if (selection === square) {
+            selection = '';
           } else {
             const success = tryMovePiece(selection, square);
             if (success) {
