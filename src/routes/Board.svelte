@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Chess, type Square, SQUARES } from 'chess.js';
+  import { Chess, type Square, type Color, SQUARES } from 'chess.js';
 
   interface Props {
     /**
@@ -26,48 +26,62 @@
      * @default black
      */
     '--color-selected'?: string;
+    /**
+     * Current turn player's color
+     */
+    turn?: Color;
   }
+  let { turn = $bindable('w') }: Props = $props();
 
   const chess: Chess = $state(new Chess());
 
   let board = $state(chess.board());
   let selection = $state<Square | ''>('');
 
-  const movePiece = (from: Square, to: Square): boolean => {
+  const tryMovePiece = (from: Square, to: Square): boolean => {
     try {
       chess.move({ from, to });
       return true;
     } catch (e) {
-      console.error(e);
       return false;
     }
   };
 
+  /**
+   * Synchronize local data with current chess data.
+   *
+   * Because the chess game object updates don't propagate
+   * to svelte, we have to set data we need manually.
+   */
+  const sync = () => {
+    board = chess.board();
+    turn = chess.turn();
+  };
+
   export const reset = () => {
     chess.reset();
-    board = chess.board();
+    sync();
     selection = '';
   };
 </script>
 
 <div class="board">
-  <!-- {#each SQUARES as square} -->
   {#each board as row, i}
-    {#each row as sq, j}
+    {#each row as piece, j}
       {@const square = SQUARES[i * 8 + j]}
       <div
         role="button"
         tabindex="0"
         class:selected={square === selection}
-        class:dark={(i + j) % 2 === 0}
-        class={sq && `${sq.color}${sq.type}`}
+        class:dark={chess.squareColor(square) === 'dark'}
+        class={piece && `${piece.color}${piece.type}`}
         onclick={() => {
           if (!selection) {
             selection = square;
           } else {
-            const success = movePiece(selection, square);
+            const success = tryMovePiece(selection, square);
             if (success) {
-              board = chess.board();
+              sync();
             }
             selection = '';
           }
@@ -87,8 +101,6 @@
     grid-template-columns: repeat(8, minmax(0, 1fr));
     grid-template-rows: repeat(8, minmax(0, 1fr));
     border: 1px solid;
-    background: var(--color-bg, gray);
-    gap: 0.1rem;
     font-size: 3rem;
     font-family: var(--font-mono);
     user-select: none;
@@ -103,7 +115,7 @@
     }
 
     .selected {
-      outline: 2px solid var(--color-selected, black);
+      border: 2px solid var(--color-selected, black);
     }
 
     .dark {
